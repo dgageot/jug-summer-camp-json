@@ -1,35 +1,30 @@
 package legacy;
 
-import com.google.common.base.Function;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URI;
-
-import static net.gageot.listmaker.ListMaker.with;
+import java.util.functions.Mapper;
 
 public class InnWebServer implements HttpHandler {
-  private final Inn inn = new Inn();
+  final Inn inn = new Inn();
 
   @Override
   public void handle(HttpExchange exchange) throws IOException {
     URI uri = exchange.getRequestURI();
-    String path = uri.getPath();
-
-    handle(exchange, path);
-  }
-
-  private void handle(HttpExchange exchange, String path) throws IOException {
+    String query = uri.getQuery();
     String body = "";
 
-    if ("/update".equals(path)) {
+    if ("/update".equals(uri.getPath())) {
       inn.updateQuality();
+    } else if (query != null) {
+      String callback = query.split("[=&]")[1];
+      body = getJsonp(callback);
     } else {
-      body = with(inn.getItems()).to(TO_JSON).join(",");
+      body = getJson();
     }
 
     byte[] response = body.getBytes();
@@ -38,12 +33,17 @@ public class InnWebServer implements HttpHandler {
     exchange.close();
   }
 
-  private static Function<Item, String> TO_JSON = new Function<Item, String>() {
-    @Override
-    public String apply(@Nullable Item item) {
-      return String.format("{\"name\": \"%s\", \"quality\": %d, \"sellIn\": %d}", item.getName(), item.getQuality(), item.getSellIn());
-    }
-  };
+  String getJson() {
+    return String.join(",", inn.getItems().map(toJson()));
+  }
+
+  String getJsonp(String callback) {
+    return callback + "(" + getJson() + ")";
+  }
+
+  static Mapper<Item, String> toJson() {
+    return item -> String.format("{\"name\":\"%s\", \"quality\":%d, \"sellIn\":%d}", item.getName(), item.getQuality(), item.getSellIn());
+  }
 
   public static void main(String[] args) throws IOException {
     int port = Integer.parseInt(System.getenv("PORT"));
