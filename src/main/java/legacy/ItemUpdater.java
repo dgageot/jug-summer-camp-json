@@ -1,46 +1,47 @@
 package legacy;
 
+import lombok.AllArgsConstructor;
+import lombok.Delegate;
+
+@AllArgsConstructor
 public class ItemUpdater {
+  @Delegate
   private final Item item;
 
-  public ItemUpdater(Item item) {
-    this.item = item;
-  }
-
   void updateQuality() {
-    if ("Sulfuras, Hand of Ragnaros".equals(item.getName())) {
+    if ("Sulfuras, Hand of Ragnaros".equals(getName())) {
       return;
     }
 
     decreaseSellIn();
 
-    if ("Aged Brie".equals(item.getName())) {
+    if ("Aged Brie".equals(getName())) {
       increaseQuality();
-      if (item.getSellIn() < 0) increaseQuality();
-    } else if ("Backstage passes to a TAFKAL80ETC concert".equals(item.getName())) {
+      if (getSellIn() < 0) increaseQuality();
+    } else if ("Backstage passes to a TAFKAL80ETC concert".equals(getName())) {
       increaseQuality();
-      if (item.getSellIn() < 10) increaseQuality();
-      if (item.getSellIn() < 5) increaseQuality();
-      if (item.getSellIn() < 0) item.setQuality(0);
+      if (getSellIn() < 10) increaseQuality();
+      if (getSellIn() < 5) increaseQuality();
+      if (getSellIn() < 0) setQuality(0);
     } else {
       decreaseQuality();
-      if (item.getSellIn() < 0) decreaseQuality();
+      if (getSellIn() < 0) decreaseQuality();
     }
   }
 
   void decreaseSellIn() {
-    item.setSellIn(item.getSellIn() - 1);
+    setSellIn(getSellIn() - 1);
   }
 
   void decreaseQuality() {
-    if (item.getQuality() > 0) {
-      item.setQuality(item.getQuality() - 1);
+    if (getQuality() > 0) {
+      setQuality(getQuality() - 1);
     }
   }
 
   void increaseQuality() {
-    if (item.getQuality() < 50) {
-      item.setQuality(item.getQuality() + 1);
+    if (getQuality() < 50) {
+      setQuality(getQuality() + 1);
     }
   }
 }
