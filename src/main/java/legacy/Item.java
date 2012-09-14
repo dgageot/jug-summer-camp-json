@@ -33,6 +33,6 @@ public class Item {
 
   @Override
   public String toString() {
-    return String.format("{\"name\":%s, \"quality\":%d, \"sellIn\":%d}", name, quality, sellIn);
+    return String.format("{\"name\":\"%s\", \"quality\":\"%d\", \"sellIn\":\"%d\"}", name, quality, sellIn);
   }
 }
