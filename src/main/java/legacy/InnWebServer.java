@@ -39,7 +39,8 @@ public class InnWebServer implements HttpHandler {
   }
 
   public static void main(String[] args) throws Exception {
-    HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
+    int port = Integer.parseInt(System.getenv("PORT"));
+    HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
     server.createContext("/", new InnWebServer());
     server.start();
   }
