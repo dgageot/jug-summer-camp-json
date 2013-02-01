@@ -1,7 +1,16 @@
 package legacy;
 
+import com.google.common.base.Joiner;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpServer;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.lang.Integer.parseInt;
 
 public class Inn {
   private List<Item> items;
@@ -21,60 +30,71 @@ public class Inn {
   }
 
   public void updateQuality() {
-    for (int i = 0; i < items.size(); i++) {
-      if (!items.get(i).getName().equals("Aged Brie") && !items.get(i).getName().equals("Backstage passes to a TAFKAL80ETC concert")) {
-        if (items.get(i).getQuality() > 0) {
-          if (!items.get(i).getName().equals("Sulfuras, Hand of Ragnaros")) {
-            items.get(i).setQuality(items.get(i).getQuality() - 1);
-          }
-        }
-      } else {
-        if (items.get(i).getQuality() < 50) {
-          items.get(i).setQuality(items.get(i).getQuality() + 1);
-
-          if (items.get(i).getName().equals("Backstage passes to a TAFKAL80ETC concert")) {
-            if (items.get(i).getSellIn() < 11) {
-              if (items.get(i).getQuality() < 50) {
-                items.get(i).setQuality(items.get(i).getQuality() + 1);
-              }
-            }
-
-            if (items.get(i).getSellIn() < 6) {
-              if (items.get(i).getQuality() < 50) {
-                items.get(i).setQuality(items.get(i).getQuality() + 1);
-              }
-            }
-          }
-        }
-      }
-
-      if (!items.get(i).getName().equals("Sulfuras, Hand of Ragnaros")) {
-        items.get(i).setSellIn(items.get(i).getSellIn() - 1);
-      }
-
-      if (items.get(i).getSellIn() < 0) {
-        if (!items.get(i).getName().equals("Aged Brie")) {
-          if (!items.get(i).getName().equals("Backstage passes to a TAFKAL80ETC concert")) {
-            if (items.get(i).getQuality() > 0) {
-              if (!items.get(i).getName().equals("Sulfuras, Hand of Ragnaros")) {
-                items.get(i).setQuality(items.get(i).getQuality() - 1);
-              }
-            }
-          } else {
-            items.get(i).setQuality(items.get(i).getQuality() - items.get(i).getQuality());
-          }
-        } else {
-          if (items.get(i).getQuality() < 50) {
-            items.get(i).setQuality(items.get(i).getQuality() + 1);
-          }
-        }
-      }
+    for (Item item : items) {
+      updateQuality(item);
     }
-
   }
 
-  public static void main(String[] args) {
-    System.out.println("OMGHAI!");
-    new Inn().updateQuality();
+  private void updateQuality(Item item) {
+    if ("Sulfuras, Hand of Ragnaros".equals(item.getName())) {
+      return;
+    }
+
+    item.setSellIn(item.getSellIn() - 1);
+
+    if ("Aged Brie".equals(item.getName())) {
+      increaseQuality(item);
+
+      if (item.getSellIn() < 0) increaseQuality(item);
+    } else if ("Backstage passes to a TAFKAL80ETC concert".equals(item.getName())) {
+      increaseQuality(item);
+
+      if (item.getSellIn() < 10) increaseQuality(item);
+      if (item.getSellIn() < 5) increaseQuality(item);
+      if (item.getSellIn() < 0) item.setQuality(0);
+    } else {
+      decreaseQuality(item);
+
+      if (item.getSellIn() < 0) decreaseQuality(item);
+    }
+  }
+
+  private void decreaseQuality(Item item) {
+    if (item.getQuality() > 0) {
+      item.setQuality(item.getQuality() - 1);
+    }
+  }
+
+  private void increaseQuality(Item item) {
+    if (item.getQuality() < 50) {
+      item.setQuality(item.getQuality() + 1);
+    }
+  }
+
+  public static void main(String[] args) throws Exception {
+    int port = parseInt(System.getenv("PORT"));
+
+    HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
+    server.createContext("/", new HttpHandler() {
+      @Override
+      public void handle(HttpExchange exchange) throws IOException {
+        List<Item> items = new Inn().getItems();
+
+        String body = "[" + Joiner.on(",").join(items) + "]";
+
+        String query = exchange.getRequestURI().getQuery();
+        if (null != query) {
+          String callback = query.split("[&=]")[1];
+          body = callback + "(" + body + ")";
+        }
+
+        byte[] response = body.getBytes();
+        exchange.sendResponseHeaders(200, response.length);
+        exchange.getResponseBody().write(response);
+        exchange.close();
+      }
+    });
+    server.start();
+
   }
 }
