@@ -19,18 +19,24 @@ public class InnWeb {
 					public void handle(HttpExchange exchange) throws IOException {
 						String uri = exchange.getRequestURI().toString();
 
-						if ("/items".equals(uri)) {
-							byte[] response = new Gson().toJson(new Inn().getItems()).getBytes();
-							exchange.getResponseHeaders().add("Content-Type", "application/json");
-							exchange.sendResponseHeaders(200, response.length);
-							exchange.getResponseBody().write(response);
-						} else if ("/".equals(uri)) {
-							byte[] response = Files.readAllBytes(Paths.get("app", "index.html"));
-							exchange.getResponseHeaders().add("Content-Type", "text/html");
-							exchange.sendResponseHeaders(200, response.length);
-							exchange.getResponseBody().write(response);
-						} else {
-							exchange.sendResponseHeaders(404, 0);
+						switch (uri) {
+							case "/items": {
+								byte[] response = new Gson().toJson(new Inn().getItems()).getBytes();
+								exchange.getResponseHeaders().add("Content-Type", "application/json");
+								exchange.sendResponseHeaders(200, response.length);
+								exchange.getResponseBody().write(response);
+								break;
+							}
+							case "/": {
+								byte[] response = Files.readAllBytes(Paths.get("app", "index.html"));
+								exchange.getResponseHeaders().add("Content-Type", "text/html");
+								exchange.sendResponseHeaders(200, response.length);
+								exchange.getResponseBody().write(response);
+								break;
+							}
+							default:
+								exchange.sendResponseHeaders(404, 0);
+								break;
 						}
 
 						exchange.close();
