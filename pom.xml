@@ -7,8 +7,8 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
+    <maven.compiler.source>1.6</maven.compiler.source>
+    <maven.compiler.target>1.6</maven.compiler.target>
   </properties>
 
   <dependencies>
@@ -56,18 +56,21 @@
 
     <plugins>
       <plugin>
-        <artifactId>maven-dependency-plugin</artifactId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.4</version>
         <executions>
           <execution>
-            <id>copy-dependencies</id>
+            <id>make-assembly</id>
             <phase>package</phase>
             <goals>
-              <goal>copy-dependencies</goal>
+              <goal>single</goal>
             </goals>
             <configuration>
-              <includeScope>compile</includeScope>
-              <includeScope>runtime</includeScope>
-              <excludeScope>test</excludeScope>
+              <appendAssemblyId>false</appendAssemblyId>
+              <finalName>distribution</finalName>
+              <descriptors>
+                <descriptor>src/main/assembly/zip.xml</descriptor>
+              </descriptors>
             </configuration>
           </execution>
         </executions>

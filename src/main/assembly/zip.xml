@@ -12,10 +12,10 @@
       <outputDirectory>classes</outputDirectory>
     </fileSet>
     <fileSet>
-      <directory>${basedir}</directory>
+      <directory>${basedir}/app</directory>
       <outputDirectory>.</outputDirectory>
       <includes>
-        <include>**/*.html</include>
+        <include>**/*</include>
       </includes>
     </fileSet>
   </fileSets>
