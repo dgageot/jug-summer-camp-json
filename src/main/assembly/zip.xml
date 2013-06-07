@@ -14,9 +14,6 @@
     <fileSet>
       <directory>${basedir}/app</directory>
       <outputDirectory>.</outputDirectory>
-      <includes>
-        <include>**/*</include>
-      </includes>
     </fileSet>
   </fileSets>
   <dependencySets>

@@ -2,8 +2,8 @@ package legacy;
 
 import java.io.*;
 import java.net.*;
+import java.nio.file.*;
 
-import com.google.common.io.*;
 import com.google.gson.*;
 import com.sun.net.httpserver.*;
 
@@ -25,7 +25,7 @@ public class InnWeb {
 							exchange.sendResponseHeaders(200, response.length);
 							exchange.getResponseBody().write(response);
 						} else if ("/".equals(uri)) {
-							byte[] response = Files.toByteArray(new File("app/index.html"));
+							byte[] response = Files.readAllBytes(Paths.get("app", "index.html"));
 							exchange.getResponseHeaders().add("Content-Type", "text/html");
 							exchange.sendResponseHeaders(200, response.length);
 							exchange.getResponseBody().write(response);
