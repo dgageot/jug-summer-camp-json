@@ -12,11 +12,8 @@
       <outputDirectory>classes</outputDirectory>
     </fileSet>
     <fileSet>
-      <directory>${basedir}/app</directory>
-      <outputDirectory>.</outputDirectory>
-      <includes>
-        <include>*.html</include>
-      </includes>
+      <directory>app</directory>
+      <outputDirectory>app</outputDirectory>
     </fileSet>
   </fileSets>
   <dependencySets>
