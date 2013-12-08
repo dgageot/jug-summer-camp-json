@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" ng-app>
+<head>
+    <title></title>
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular.js"></script>
+    <script type="text/javascript" src="controllers.coffee"></script>
+</head>
+<body ng-controller="InnController">
+<table>
+    <tr ng-repeat="item in items">
+        <td>{{item.name}}</td>
+        <td>{{item.sellIn}}</td>
+        <td>{{item.quality}}</td>
+    </tr>
+</table>
+Hello Devoxx
+
+</body>
+</html>
